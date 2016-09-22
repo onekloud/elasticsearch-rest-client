@@ -20,6 +20,7 @@ package org.elasticsearch.client;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -217,21 +218,44 @@ public final class RestClient implements Closeable {
 		HttpAsyncResponseConsumer<HttpResponse> responseConsumer = new HeapBufferedAsyncResponseConsumer();
 		return performRequest(method, endpoint, params, entity, responseConsumer, headers);
 	}
+
 	
-	public Response performRequest(HttpMtd method, String endpoint) throws IOException {
-		return performRequestPBH(method, endpoint, EMPTY_MAP, null, null);
+	public Response call(HttpMtd method, String endpoint) throws IOException {
+		return callInternal(method, endpoint, EMPTY_MAP, null);
 	}
 
-	public Response performRequestB(HttpMtd method, String endpoint, Map<String, Object> body) throws IOException {
-		return performRequestPBH(method, endpoint, EMPTY_MAP, body, null);
+	public Response callB(HttpMtd method, String endpoint, Map<String, Object> body) throws IOException {
+		return callInternal(method, endpoint, EMPTY_MAP, map2HttpEntity(body));
 	}
 
-	public Response performRequestPB(HttpMtd method, String endpoint, Map<String, Object> params, Map<String, Object> body) throws IOException {
-		return performRequestPBH(method, endpoint, params, body, null);
+	public Response callBstring(HttpMtd method, String endpoint, String body) throws IOException {
+		return callInternal(method, endpoint, EMPTY_MAP, string2HttpEntity(body));
 	}
 
-	public Response performRequestPBH(HttpMtd method, String endpoint, Map<String, Object> params, Map<String, Object> body, Map<String, Object> headersMap)
+	public Response callPB(HttpMtd method, String endpoint, Map<String, Object> params, Map<String, Object> body) throws IOException {
+		return callInternal(method, endpoint, params, map2HttpEntity(body));
+	}
+
+	public Response callPBstring(HttpMtd method, String endpoint, Map<String, Object> params, String body) throws IOException {
+		return callInternal(method, endpoint, params, string2HttpEntity(body));
+	}
+
+	public Response callPBH(HttpMtd method, String endpoint, Map<String, Object> params, Map<String, Object> body, Map<String, Object> headersMap)
 			throws IOException {
+		return callInternal(method, endpoint, params, map2HttpEntity(body), map2Header(headersMap));
+	}
+
+	public Response callPBH(HttpMtd method, String endpoint, Map<String, Object> params, String body, Map<String, Object> headersMap)
+			throws IOException {
+		return callInternal(method, endpoint, params, string2HttpEntity(body), map2Header(headersMap));
+	}
+	
+	private Response callInternal(HttpMtd method, String endpoint, Map<String, Object> params, HttpEntity entity, Header... headers) throws IOException {
+		HttpAsyncResponseConsumer<HttpResponse> responseConsumer = new HeapBufferedAsyncResponseConsumer();
+		return performRequest(method, endpoint, params, entity, responseConsumer, headers);
+	}
+
+	private static Header[] map2Header(Map<String, Object> headersMap) {
 		Header[] headers;
 		if (headersMap == null || headersMap.size() == 0)
 			headers = NO_HEADER;
@@ -241,10 +265,19 @@ public final class RestClient implements Closeable {
 			for (Map.Entry<String, Object> value : headersMap.entrySet())
 				headers[i] = new BasicHeader(value.getKey(), value.getValue().toString());
 		}
-		HttpEntity entity = (body != null) ? new StringEntity(JsonOutput.toJson(body)) : null;
+		return headers;
+	}
 
-		HttpAsyncResponseConsumer<HttpResponse> responseConsumer = new HeapBufferedAsyncResponseConsumer();
-		return performRequest(method, endpoint, params, entity, responseConsumer, headers);
+	private static HttpEntity map2HttpEntity(Map<String, Object> body) throws UnsupportedEncodingException {
+		if (body == null)
+			return null;
+		return new StringEntity(JsonOutput.toJson(body));
+	}
+
+	private static HttpEntity string2HttpEntity(String body) throws UnsupportedEncodingException {
+		if (body == null)
+			return null;
+		return new StringEntity(body);
 	}
 
 	/**
