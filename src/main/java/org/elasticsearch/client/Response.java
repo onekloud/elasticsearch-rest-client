@@ -29,7 +29,9 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.RequestLine;
 import org.apache.http.StatusLine;
+import org.apache.http.util.EntityUtils;
 
+import groovy.json.JsonBuilder;
 import groovy.json.JsonSlurper;
 
 /**
@@ -101,10 +103,18 @@ public final class Response {
 		return response.getEntity();
 	}
 
+	public String getBody() throws UnsupportedOperationException, IOException {
+		return EntityUtils.toString(getEntity());
+	}
+	
 	@SuppressWarnings({ "rawtypes" })
 	public Map get() throws UnsupportedOperationException, IOException {
 		Object jsonData = jsonSlurper.parse(getEntity().getContent());
 		return (Map) jsonData;
+	}
+	
+	public String toPrettyString(Map map) {
+		return new JsonBuilder(map).toPrettyString();
 	}
 
 	HttpResponse getHttpResponse() {
