@@ -69,7 +69,7 @@ import org.apache.http.nio.client.methods.HttpAsyncMethods;
 import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
 import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 
-import com.onekloud.auth.AWSRemoteSigner;
+import com.amazonaws.auth.AWSRemoteSigner;
 import com.onekloud.auth.AWSSigneHelper;
 
 import groovy.json.JsonOutput;
@@ -102,7 +102,7 @@ public final class RestClient implements Closeable {
 
 	private String service;
 	private String accessKey;
-	private AWSRemoteSigner awsSigner;
+	private com.amazonaws.auth.AWSRemoteSigner awsSigner;
 	private String region;
 
 	public void setAWSAuth(String accessKey, AWSRemoteSigner awsSigner, String service, String region) {
