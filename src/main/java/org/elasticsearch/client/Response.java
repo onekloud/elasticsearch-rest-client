@@ -107,12 +107,18 @@ public final class Response {
 		return EntityUtils.toString(getEntity());
 	}
 	
+	/**
+	 * Retun a parsed response as a map
+	 */
 	@SuppressWarnings({ "rawtypes" })
 	public Map get() throws UnsupportedOperationException, IOException {
 		Object jsonData = jsonSlurper.parse(getEntity().getContent());
 		return (Map) jsonData;
 	}
 	
+	/**
+	 * Retun a parsed response as a string
+	 */
 	public String toPrettyString(Map map) {
 		return new JsonBuilder(map).toPrettyString();
 	}
