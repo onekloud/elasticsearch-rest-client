@@ -271,7 +271,8 @@ public final class RestClient implements Closeable {
 	private static HttpEntity map2HttpEntity(Map<String, Object> body) throws UnsupportedEncodingException {
 		if (body == null)
 			return null;
-		return new StringEntity(JsonOutput.toJson(body));
+		String strBody = JsonOutput.toJson(body);
+		return new StringEntity(strBody);
 	}
 
 	private static HttpEntity string2HttpEntity(String body) throws UnsupportedEncodingException {
