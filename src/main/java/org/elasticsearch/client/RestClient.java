@@ -447,7 +447,7 @@ public final class RestClient implements Closeable {
 			// http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html
 
 			String signing = AWSUtils.createSinging(now, region, service, canonicalRequest);
-			byte[] authorizationSingingBytes = awsSigner.makeSigne(signing, date, region, "es", "aws4_request");
+			byte[] authorizationSingingBytes = awsSigner.makeSigneV4(signing, date, region, "es", "aws4_request");
 			String authorizationSinging = AWSSigneHelper.encodeHex(authorizationSingingBytes);
 			String headerValue = "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + date + "/" + region + "/" + "es" + "/aws4_request, SignedHeaders="
 					+ AWSUtils.getSignedHeaders(contentType, hostHeader, xAmzDate) + ", Signature=" + authorizationSinging;

@@ -65,7 +65,7 @@
 		<dependency>
 			<groupId>com.onekloud</groupId>
 			<artifactId>aws-signature</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 		<dependency>
@@ -101,7 +101,7 @@
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-core</artifactId>
-			<version>1.11.66-X</version>
+			<version>1.11.66-Z-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
